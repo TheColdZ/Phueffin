@@ -57,6 +57,7 @@ def main():
             time.sleep(4)
             lights(2, 'state', on = False)
             time.sleep(2)
+#Test, is this working? 
 
 if __name__ == "__main__":
     main()
