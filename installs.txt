@@ -1,0 +1,5 @@
+Installed stuff and how to for future reference, i.e. Dockerfiles:
+
+qhue, installed using python3 -m pip install qhue (I think....)
+
+FastApi installed using: 'python3 -m pip install "fastapi[standard]" '
