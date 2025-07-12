@@ -31,33 +31,51 @@ def main():
     # create a lights resource
     lights = bridge.lights
 
-    # query the API and print the results as JSON
-    #print(json.dumps(lights(), indent=2))
-
-    #while True :
-    #    lights(2, 'state', on = True)
-    #    time.sleep(4)
-    #    lights(2, 'state', on = False)
-    #    time.sleep(4)
-
     while True :
-        time.sleep(1)
         headers = {'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:130.0) Gecko/20100101 Firefox/130.0'}
         r = requests.get(API_ADDRESS, headers = headers)
         print( r.status_code)
         print(r.json()[0]['plannedLoads'][0]['date'])
-        trash_collection_time = datetime.fromisoformat(r.json()[0]['plannedLoads'][0]['date'])
-        print(trash_collection_time)
-        checktime = datetime.now() + timedelta(hours = 72)
-        print(checktime)
-        trash_will_be_collected_tomorrow = trash_collection_time.date() == checktime.date()
-        print("Trash", trash_will_be_collected_tomorrow)
-        while trash_will_be_collected_tomorrow :
-            lights(2, 'state', on = True)
-            time.sleep(4)
-            lights(2, 'state', on = False)
-            time.sleep(2)
-#Test, is this working? 
+        print(r.json())
+        trash_collection_date = datetime.fromisoformat(r.json()[0]['plannedLoads'][0]['date'])
+        print(trash_collection_date)
+        fractions = r.json()[0]['plannedLoads'][0]['fractions']
+        print("fractions", fractions) #These will determine colour of light, eventually
+        #We need to handle multiple pickups and trash pickups on consecutive days. 
+        while date_is_today_or_tomorrow(trash_collection_date):
+            if light_should_activate():
+                #activate_light
+                lights(2, 'state', on = True)
+                time.sleep(4)
+                lights(2, 'state', on = False)
+                time.sleep(2)
+
+        #Check every 15 minutes
+        time.sleep(900)
+
+def date_is_today_or_tomorrow(dateToCheck):
+    return date_is_today(dateToCheck) or date_is_tomorrow(dateToCheck)
+
+def date_is_tomorrow(dateToCheck):
+    tomorrow = datetime.now() + timedelta(hours = 24)
+    print("tomorrow", tomorrow)
+    is_tomorrow = dateToCheck.date() == tomorrow.date()
+    print("is_tomorrow", is_tomorrow)
+    return is_tomorrow 
+
+def date_is_today(dateToCheck):
+    return dateToCheck.date() == datetime.now().date()
+
+def light_should_activate():
+    now = datetime.now()
+    #Very hardcoded for now, as everything else... eventally create some smart comparison function that can take some input from env var/similar
+    today20pm = now.replace(hour=20, minute=0, second=0, microsecond=0)
+    today23pm = now.replace(hour=23, minute=0, second=0, microsecond=0)
+    today8am = now.replace(hour=8, minute=0, second=0, microsecond=0)
+    today9_30am = now.replace(hour=9, minute=30, second=0, microsecond=0)
+
+    return ( now > today20pm and now < today23pm ) or ( now > today8am and now < today9_30am)
+
 
 if __name__ == "__main__":
     main()
