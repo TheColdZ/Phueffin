@@ -38,7 +38,7 @@ def main():
         print("\n planedloads\n", r.json()[0]['plannedLoads'][:10])
         next10TrashPickups = r.json()[0]['plannedLoads'][:10]
 
-        trashPickupsTodayOrTomorrow = trash_is_being_picked_up_today_or_tomorrow(next10TrashPickups)
+        trashPickupsTodayOrTomorrow = get_trash_pickups_today_or_tomorrow(next10TrashPickups)
         if (trashPickupsTodayOrTomorrow):
             print("light 2", lights(2)['state']['on'])
             while True:
@@ -55,13 +55,14 @@ def main():
                     print("Alright, taking a break, but don't forget to put the bins out!!!")
                     time.sleep(14400) #Sleep for 4 hours to get outside window of check, hardcoded it is...
                     break
-                if not trash_is_being_picked_up_today_or_tomorrow(trashPickupsTodayOrTomorrow):
+                #The pickups are no longer today or tomorrow
+                if not get_trash_pickups_today_or_tomorrow(trashPickupsTodayOrTomorrow):
                     break
         #Check every 15 minutes
         time.sleep(900)
 
 
-def trash_is_being_picked_up_today_or_tomorrow(trashPickups):
+def get_trash_pickups_today_or_tomorrow(trashPickups):
     return [pickup for pickup in trashPickups if date_is_today_or_tomorrow(datetime.fromisoformat(pickup['date']))]
     
 def date_is_today_or_tomorrow(dateToCheck):
