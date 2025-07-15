@@ -35,24 +35,35 @@ def main():
         headers = {'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:130.0) Gecko/20100101 Firefox/130.0'}
         r = requests.get(API_ADDRESS, headers = headers)
         print( r.status_code)
-        print(r.json()[0]['plannedLoads'][0]['date'])
-        print(r.json())
-        trash_collection_date = datetime.fromisoformat(r.json()[0]['plannedLoads'][0]['date'])
-        print(trash_collection_date)
-        fractions = r.json()[0]['plannedLoads'][0]['fractions']
-        print("fractions", fractions) #These will determine colour of light, eventually
-        #We need to handle multiple pickups and trash pickups on consecutive days. 
-        while date_is_today_or_tomorrow(trash_collection_date):
-            if light_should_activate():
-                #activate_light
-                lights(2, 'state', on = True)
-                time.sleep(4)
-                lights(2, 'state', on = False)
-                time.sleep(2)
+        print("\n planedloads\n", r.json()[0]['plannedLoads'][:10])
+        next10TrashPickups = r.json()[0]['plannedLoads'][:10]
 
+        trashPickupsTodayOrTomorrow = trash_is_being_picked_up_today_or_tomorrow(next10TrashPickups)
+        if (trashPickupsTodayOrTomorrow):
+            print("light 2", lights(2)['state']['on'])
+            while True:
+                #Add additional conditioning here, i.e. if light source status has changed since the while loop started (i.e. people have stopped the blinking)
+
+                if light_should_activate():
+                    #activate_light
+                    lights(2, 'state', on = True)
+                    time.sleep(4)
+                    lights(2, 'state', on = False)
+                    time.sleep(2)
+                #We get it, we need to take the bins out.... leave me alone. 
+                if lights(2)['state']['on']:
+                    print("Alright, taking a break, but don't forget to put the bins out!!!")
+                    time.sleep(14400) #Sleep for 4 hours to get outside window of check, hardcoded it is...
+                    break
+                if not trash_is_being_picked_up_today_or_tomorrow(trashPickupsTodayOrTomorrow):
+                    break
         #Check every 15 minutes
         time.sleep(900)
 
+
+def trash_is_being_picked_up_today_or_tomorrow(trashPickups):
+    return [pickup for pickup in trashPickups if date_is_today_or_tomorrow(datetime.fromisoformat(pickup['date']))]
+    
 def date_is_today_or_tomorrow(dateToCheck):
     return date_is_today(dateToCheck) or date_is_tomorrow(dateToCheck)
 
