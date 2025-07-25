@@ -1,0 +1,15 @@
+#This should be slimmed... but can't be bothered right now to figure out how it actually works 
+annotated-types==0.5.0
+anyio==3.7.1
+brotlipy==0.7.0
+certifi==2021.5.30
+importlib-metadata==6.7.0
+oauthlib==3.2.2
+pycosat==0.6.3
+qhue==2.0.1
+requests==2.32.4
+requests-oauthlib==2.0.0
+sniffio==1.3.1
+starlette==0.27.0
+typing-extensions==4.7.1
+zipp==3.15.0
