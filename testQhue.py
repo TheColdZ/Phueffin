@@ -1,7 +1,7 @@
-#Initial 'hacky' (it's extremely hacky, almost to embarassing to commit, but here we are) script for controlling hue lights. 
+#Initial 'hacky' (it's extremely hacky, almost too embarassing to commit, but here we are) script for controlling hue lights. 
 
 import json
-from os import path
+from os import path, environ
 from qhue import Bridge
 from datetime import datetime, timedelta
 import requests
@@ -14,16 +14,10 @@ CRED_FILE_PATH = "hue_username.txt"
 
 API_ADDRESS_PATH = "api_address.txt"
             
-
-    #time_val = datetime.datetime.strptime(r.json()[0]['plannedLoads'][0]['date'], '%Y-%m-%dT%H:%M:%S.%f')
-    #print(time_val)
 def main():
 
-    with open(CRED_FILE_PATH, "r") as cred_file:
-            USER_NAME = cred_file.read()
-
-    with open(API_ADDRESS_PATH, "r") as cred_file:
-            API_ADDRESS = cred_file.read()
+    USER_NAME = get_username()
+    API_ADDRESS = get_api_address()
 
     # create the bridge resource, passing the captured username
     bridge = Bridge(BRIDGE_IP, USER_NAME)
@@ -61,8 +55,21 @@ def main():
         #Check every 15 minutes
         time.sleep(900)
 
+def get_api_address() -> str :
+    if 'API_ADDRESS_ENV' in environ:
+        return environ.get('API_ADDRESS_ENV')
+    return read_file_from_path(API_ADDRESS_PATH)
 
-def get_trash_pickups_today_or_tomorrow(trashPickups):
+def get_username() -> str :
+    if 'USERNAME_ENV' in environ:
+        return environ.get('USERNAME_ENV')
+    return read_file_from_path(CRED_FILE_PATH)
+
+def read_file_from_path(path) -> str :
+    with open(path, "r") as file:
+            return file.read()
+
+def get_trash_pickups_today_or_tomorrow(trashPickups) -> list:
     return [pickup for pickup in trashPickups if date_is_today_or_tomorrow(datetime.fromisoformat(pickup['date']))]
     
 def date_is_today_or_tomorrow(dateToCheck):
