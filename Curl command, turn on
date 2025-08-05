@@ -1,0 +1,1 @@
+curl --insecure --header "hue-application-key: <Username>" "Content-Type: application/json" -X PUT --data '{"on":{"on":true}}' https://192.168.0.207/clip/v2/resource/light/a9ad1ef4-a969-45e8-a744-0c5ac314b0d2 
