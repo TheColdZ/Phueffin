@@ -19,12 +19,6 @@ def main():
     USER_NAME = get_username()
     API_ADDRESS = get_api_address()
 
-    # create the bridge resource, passing the captured username
-    bridge = Bridge(BRIDGE_IP, USER_NAME)
-
-    # create a lights resource
-    lights = bridge.lights
-
     while True :
         headers = {'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:130.0) Gecko/20100101 Firefox/130.0'}
         r = requests.get(API_ADDRESS, headers = headers)
@@ -34,6 +28,11 @@ def main():
 
         trashPickupsTodayOrTomorrow = get_trash_pickups_today_or_tomorrow(next10TrashPickups)
         if (trashPickupsTodayOrTomorrow):
+            # create the bridge resource, passing the captured username
+            bridge = Bridge(BRIDGE_IP, USER_NAME)
+
+            # create a lights resource
+            lights = bridge.lights
             print("light 2", lights(2)['state']['on'])
             while True:
                 #Add additional conditioning here, i.e. if light source status has changed since the while loop started (i.e. people have stopped the blinking)
