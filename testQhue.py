@@ -28,16 +28,17 @@ def main():
 
         trashPickupsTodayOrTomorrow = get_trash_pickups_today_or_tomorrow(next10TrashPickups)
         if (trashPickupsTodayOrTomorrow):
-            # create the bridge resource, passing the captured username
-            bridge = Bridge(BRIDGE_IP, USER_NAME)
-
-            # create a lights resource
-            lights = bridge.lights
-            print("light 2", lights(2)['state']['on'])
             while True:
                 #Add additional conditioning here, i.e. if light source status has changed since the while loop started (i.e. people have stopped the blinking)
 
                 if light_should_activate():
+                    # create the bridge resource, passing the captured username
+                    bridge = Bridge(BRIDGE_IP, USER_NAME)
+
+                    # create a lights resource
+                    lights = bridge.lights
+                    print("light 2", lights(2)['state']['on'])
+                    
                     #activate_light
                     lights(2, 'state', on = True)
                     time.sleep(4)
