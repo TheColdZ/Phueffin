@@ -44,11 +44,11 @@ def main():
                     time.sleep(4)
                     lights(2, 'state', on = False)
                     time.sleep(2)
-                #We get it, we need to take the bins out.... leave me alone. 
-                if lights(2)['state']['on']:
-                    print("Alright, taking a break, but don't forget to put the bins out!!!")
-                    time.sleep(14400) #Sleep for 4 hours to get outside window of check, hardcoded it is...
-                    break
+                    #We get it, we need to take the bins out.... leave me alone. 
+                    if lights(2)['state']['on']:
+                        print("Alright, taking a break, but don't forget to put the bins out!!!")
+                        time.sleep(14400) #Sleep for 4 hours to get outside window of check, hardcoded it is...
+                        break
                 #The pickups are no longer today or tomorrow
                 if not get_trash_pickups_today_or_tomorrow(trashPickupsTodayOrTomorrow):
                     break
