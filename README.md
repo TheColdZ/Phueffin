@@ -20,3 +20,11 @@ If you are intrigued/want to use it/have an idea/want to offer me a high paying 
 Rant over? 
 
 Or yeah the name, part of my name can be translated to puffin. Maybe it has to change at some point, time will tell. 
+
+
+
+Useful commands: 
+Want to find the "username" for a server, use this curl command: 
+curl --header "Content-Type: application/json"   --request POST   --data '{"devicetype":"app#some great name"}'   http://<IP-address>/api
+
+Eventually (maybe) this should be faced out and be replaced with an auto detect upon startup.... low priority for now. 
