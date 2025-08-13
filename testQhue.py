@@ -18,6 +18,7 @@ def main():
 
     USER_NAME = get_username()
     API_ADDRESS = get_api_address()
+    CHECK_INTERVAL = get_check_interval()
 
     while True :
         headers = {'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:130.0) Gecko/20100101 Firefox/130.0'}
@@ -26,7 +27,7 @@ def main():
         print("\n planedloads\n", r.json()[0]['plannedLoads'][:10])
         next10TrashPickups = r.json()[0]['plannedLoads'][:10]
 
-        trashPickupsTodayOrTomorrow = get_trash_pickups_today_or_tomorrow(next10TrashPickups)
+        trashPickupsTodayOrTomorrow = get_trash_pickups_today_or_tomorrow(next10TrashPickups) 
         if (trashPickupsTodayOrTomorrow):
             while True:
                 #Add additional conditioning here, i.e. if light source status has changed since the while loop started (i.e. people have stopped the blinking)
@@ -48,12 +49,13 @@ def main():
                     if lights(2)['state']['on']:
                         print("Alright, taking a break, but don't forget to put the bins out!!!")
                         time.sleep(14400) #Sleep for 4 hours to get outside window of check, hardcoded it is...
-                        break
                 #The pickups are no longer today or tomorrow
                 if not get_trash_pickups_today_or_tomorrow(trashPickupsTodayOrTomorrow):
                     break
-        #Check every 15 minutes
-        time.sleep(900)
+        else:
+            # No pickup tomorrow or today, check again later
+            print("No pickups today or tomorrow, checking again after", CHECK_INTERVAL, "seconds, going to sleep at:", datetime.now())
+            time.sleep(CHECK_INTERVAL)
 
 def get_api_address() -> str :
     if 'API_ADDRESS_ENV' in environ:
@@ -64,6 +66,11 @@ def get_username() -> str :
     if 'USERNAME_ENV' in environ:
         return environ.get('USERNAME_ENV')
     return read_file_from_path(CRED_FILE_PATH)
+
+def get_check_interval() -> float :
+    if 'CHECK_INTERVAL_ENV' in environ:
+        return environ.get('CHECK_INTERVAL_ENV')
+    return 60*60*24
 
 def read_file_from_path(path) -> str :
     with open(path, "r") as file:
